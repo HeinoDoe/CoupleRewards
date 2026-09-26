@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dutzis Bank</title>
+<meta name="description" content="A private points bank for two people.">
+<meta name="theme-color" content="#6F7F45">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Caveat:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="crest">🐾 DUTZIS BANK 🐾</div>
+    <div class="sub">small steps, big Dutzis</div>
+  </header>
+
+  <div class="banks">
+    <div class="bank a on" id="bA">
+      <input id="nA" value="Me" aria-label="First name">
+      <div class="n" id="vA">0</div><div class="s">Logging for me</div>
+    </div>
+    <div class="bank b" id="bB">
+      <input id="nB" value="Her" aria-label="Second name">
+      <div class="n" id="vB">0</div><div class="s">Tap to switch</div>
+    </div>
+  </div>
+
+  <div class="streaks">
+    <div class="sk"><div class="big" id="skA">🔥 0</div><div class="lb">study · workout · reading</div>
+      <div class="best" id="skAB">best: 0</div><div class="dots" id="dtA"></div></div>
+    <div class="sk"><div class="big" id="skB">🔥 0</div><div class="lb">study · workout · reading</div>
+      <div class="best" id="skBB">best: 0</div><div class="dots" id="dtB"></div></div>
+  </div>
+
+  <nav class="tabs">
+    <button class="on" data-tab="earn">Earn</button>
+    <button data-tab="shop">Shop</button>
+    <button data-tab="log">Ledger</button>
+    <button data-tab="card">Card</button>
+  </nav>
+
+  <section class="panel on" id="p-earn">
+    <div class="daybar" id="daybar">
+      <span class="dl">Logging for</span>
+      <input type="date" id="dDate">
+      <button id="todayBtn">Today</button>
+    </div>
+    <h2>👤 Alone</h2><div id="solo"></div>
+    <h2 class="blue">👥 Together</h2><div id="duo"></div>
+    <h2 class="gold">🏆 End of week</h2><div id="week"></div>
+
+    <h2 class="rust">🤝 Agreed extra</h2>
+    <div class="act misc">
+      <span class="ico">✨</span>
+      <span class="nm"><input id="mText" placeholder="What did you agree on?" maxlength="40">
+        <small>anything you both decide is worth a Dutzi</small></span>
+      <span class="btns">
+        <button data-misc="1">+1<small>D🐾</small></button>
+        <button data-misc="2">+2<small>D🐾</small></button>
+      </span>
+    </div>
+  </section>
+
+  <section class="panel" id="p-shop"><div id="shop"></div></section>
+
+  <section class="panel" id="p-log">
+    <h2>📖 Ledger</h2><div id="log"></div>
+    <button class="more" id="moreBtn">Show all</button>
+    <div class="tools">
+      <button id="backupBtn">Copy backup</button>
+      <button id="restoreBtn">Restore</button>
+      <button id="wipeBtn">Reset all</button>
+      <textarea id="box" hidden placeholder="Paste your backup here, then press Restore again"></textarea>
+    </div>
+  </section>
+
+  <section class="panel" id="p-card">
+    <div class="shot" id="shot">
+      <span class="rib">DUTZIS STAND</span>
+      <div class="date" id="cDate">—</div>
+      <div class="pair">
+        <div class="who a"><div class="nm" id="cNA">Me</div><div class="big" id="cVA">0</div>
+          <div class="unit">Dutzis</div><div class="fire" id="cFA">🔥 0 days</div></div>
+        <div class="paw">🐾</div>
+        <div class="who b"><div class="nm" id="cNB">Her</div><div class="big" id="cVB">0</div>
+          <div class="unit">Dutzis</div><div class="fire" id="cFB">🔥 0 days</div></div>
+      </div>
+      <hr>
+      <div class="line"><span>Earned this week</span><span id="cWeek">—</span></div>
+      <div class="line"><span>Spent so far</span><span id="cSpent">—</span></div>
+      <div class="line"><span>Top activity</span><span id="cTop">—</span></div>
+      <div class="goal" id="cGoal">—</div>
+      <div class="note" id="cNote">keep going 🐾</div>
+      <div class="foot">♥ save dutzis · reach goals · treat dutzi ♥</div>
+    </div>
+    <p class="hint">📸 Screenshot this and send it</p>
+  </section>
+</div>
+
+<div class="bar"><span class="dot" id="dot"></span><span id="st">…</span></div>
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
