@@ -1,6 +1,8 @@
-/* Offline cache. Bump CACHE when you change any file, or browsers keep the old one. */
-const CACHE = 'dutzis-v1';
+/* Offline cache. Network first, so a new version shows up on the next open;
+   the cache is only used when offline. Bumping CACHE just clears old copies. */
+const CACHE = 'dutzis-v2';
 const FILES = ['./', './index.html', './css/styles.css', './js/app.js', './js/data.js',
+               './js/sync.js', './js/firebase-config.js',
                './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -11,14 +13,12 @@ self.addEventListener('activate', e => {
     .then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
+  // Only our own files — Firebase and fonts go straight to the network.
+  if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
   e.respondWith(
-    caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
-      if (res.ok && e.request.url.startsWith(self.location.origin)) {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
-      }
+    fetch(e.request, { cache: 'no-cache' }).then(res => {
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); }
       return res;
-    }).catch(() => caches.match('./index.html')))
+    }).catch(() => caches.match(e.request).then(hit => hit || caches.match('./index.html')))
   );
 });

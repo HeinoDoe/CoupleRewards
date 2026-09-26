@@ -1,0 +1,14 @@
+rules_version = '2';
+// Paste into Firebase console → Firestore Database → Rules → Publish.
+// A bank can only be opened by someone who knows its long pair code;
+// nobody can list banks, so the code works like a shared password.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /banks/{bank} {
+      allow get, create, update: if request.auth != null && bank.size() >= 20;
+      match /log/{entry} {
+        allow read, write: if request.auth != null && bank.size() >= 20;
+      }
+    }
+  }
+}

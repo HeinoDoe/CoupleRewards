@@ -1,8 +1,8 @@
 # 🐾 Dutzis Bank
 
 A small private points bank for two people. Earn Dutzis for studying, workouts,
-reading and chores; spend them on each other. Everything is saved **in the
-browser of whoever opens it** — there is no server, no account and no database.
+reading and chores; spend them on each other. Everything is saved in the browser,
+and — once you connect a free Firebase project — shared live between both phones.
 
 ## Run it locally
 
@@ -35,6 +35,22 @@ Open that link on your phone and use *Add to Home screen* — because of
 `manifest.webmanifest` it installs as a proper app with its own icon and works
 offline.
 
+## Share points between two phones (Firebase)
+
+1. Go to <https://console.firebase.google.com> → **Create a project** (Analytics can be off).
+2. **Build → Authentication → Get started → Sign-in method → Anonymous → Enable.**
+3. **Build → Firestore Database → Create database** (any location, *production mode*).
+   Then open the **Rules** tab, replace everything with the contents of
+   [`firestore.rules`](firestore.rules) and press **Publish**.
+4. **Project settings (⚙) → Your apps → Web (`</>`)** → register an app → copy the
+   `firebaseConfig` values into [`js/firebase-config.js`](js/firebase-config.js). Commit and push.
+5. Open the site on phone 1. The bar at the bottom should say *Synced with both phones*.
+   Go to **Ledger → 🔗 Link other phone**, send that link to phone 2 and open it there.
+
+Both phones now use the same bank. Anything already logged on either phone is merged
+in once. Keep the link private — whoever has it can see and edit the points.
+Without step 4 the app stays local-only, exactly as before.
+
 ## Make it yours
 
 Everything you'd want to change lives in **`js/data.js`**:
@@ -49,8 +65,8 @@ Everything you'd want to change lives in **`js/data.js`**:
 
 Colours and fonts are CSS variables at the top of `css/styles.css`.
 
-> After changing any file, bump `CACHE` in `sw.js` (e.g. `dutzis-v2`) or browsers
-> will keep serving the old cached version.
+Phones pick up a new version the next time the app is opened online. The
+offline cache in `sw.js` is only used when there's no connection.
 
 ## How it works
 
