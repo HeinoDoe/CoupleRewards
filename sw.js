@@ -1,6 +1,6 @@
 /* Offline cache. Network first, so a new version shows up on the next open;
    the cache is only used when offline. Bumping CACHE just clears old copies. */
-const CACHE = 'dutzis-v3';
+const CACHE = 'dutzis-v4';
 const FILES = ['./', './index.html', './css/styles.css', './js/app.js', './js/data.js',
                './js/dog.js', './js/sync.js', './js/firebase-config.js',
                './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];

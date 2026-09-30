@@ -4,7 +4,7 @@
   'use strict';
 
   const KEY = 'dutzis_bank_v2';
-  const VERSION = 'v3';
+  const VERSION = 'v4';
   const DOG = { name: 'Dutzi', rest: 0, start: 'a', min: 5 };   // rest: 0 = Sunday … 6 = Saturday
   const $ = id => document.getElementById(id);
   let S = { names: { a: 'Me', b: 'Her' }, log: [], dog: { ...DOG }, train: {} };

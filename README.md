@@ -53,7 +53,7 @@ Copy the printed config into [`js/firebase-config.js`](js/firebase-config.js), c
 On first open each phone asks for a **shared password**. Type the same one on both
 phones (capitals and extra spaces don't matter) and they use the same bank. Anything
 already saved on a phone can be merged in once. The bottom bar shows the sync state and
-app version, so you can check both phones say *Synced with both phones · v3*.
+app version, so you can check both phones say *Synced with both phones · v4*.
 Without a config the app stays local-only and the bar says so.
 
 ## Dog training
