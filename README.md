@@ -35,21 +35,33 @@ Open that link on your phone and use *Add to Home screen* — because of
 `manifest.webmanifest` it installs as a proper app with its own icon and works
 offline.
 
-## Share points between two phones (Firebase)
+## Share everything between two phones (Firebase)
 
-1. Go to <https://console.firebase.google.com> → **Create a project** (Analytics can be off).
-2. **Build → Authentication → Get started → Sign-in method → Anonymous → Enable.**
-3. **Build → Firestore Database → Create database** (any location, *production mode*).
-   Then open the **Rules** tab, replace everything with the contents of
-   [`firestore.rules`](firestore.rules) and press **Publish**.
-4. **Project settings (⚙) → Your apps → Web (`</>`)** → register an app → copy the
-   `firebaseConfig` values into [`js/firebase-config.js`](js/firebase-config.js). Commit and push.
-5. Open the site on phone 1. The bar at the bottom should say *Synced with both phones*.
-   Go to **Ledger → 🔗 Link other phone**, send that link to phone 2 and open it there.
+Sync uses a free Firebase project. Setup from this folder:
 
-Both phones now use the same bank. Anything already logged on either phone is merged
-in once. Keep the link private — whoever has it can see and edit the points.
-Without step 4 the app stays local-only, exactly as before.
+```bash
+npx firebase-tools login
+npx firebase-tools projects:create <project-id>
+npx firebase-tools firestore:databases:create "(default)" --location europe-west3 --project <project-id>
+npx firebase-tools deploy --only firestore:rules --project <project-id>
+npx firebase-tools apps:create WEB "Dutzis Bank" --project <project-id>
+npx firebase-tools apps:sdkconfig WEB <app-id> --project <project-id>
+```
+
+Copy the printed config into [`js/firebase-config.js`](js/firebase-config.js), commit and push.
+
+On first open each phone asks for a **shared password**. Type the same one on both
+phones (capitals and extra spaces don't matter) and they use the same bank. Anything
+already saved on a phone can be merged in once. The bottom bar shows the sync state and
+app version, so you can check both phones say *Synced with both phones · v3*.
+Without a config the app stays local-only and the bar says so.
+
+## Dog training
+
+The **🐕 Training** tab plans one inside and one outside session (5+ min each) every day
+except the rest day. Training days alternate between you two, so with Sunday off one of
+you always has Mon/Wed/Fri and the other Tue/Thu/Sat. Change the rest day, who has Monday
+and the minimum minutes under **⚙️ Plan**. Swap a single day with *⇄ Swap turn*.
 
 ## Make it yours
 

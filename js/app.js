@@ -4,10 +4,14 @@
   'use strict';
 
   const KEY = 'dutzis_bank_v2';
+  const VERSION = 'v3';
+  const DOG = { name: 'Dutzi', rest: 0, start: 'a', min: 5 };   // rest: 0 = Sunday … 6 = Saturday
   const $ = id => document.getElementById(id);
-  let S = { names: { a: 'Me', b: 'Her' }, log: [] };
+  let S = { names: { a: 'Me', b: 'Her' }, log: [], dog: { ...DOG }, train: {} };
   let me = 'a', showAll = false, saving = true, sync = 'local';
   const cloud = () => window.DutzisSync;
+  const hooks = [];
+  function tidy() { S.dog = { ...DOG, ...(S.dog || {}) }; S.train = S.train || {}; S.log = S.log || []; }
 
   /* ---------- storage ---------- */
   const hasLS = (() => { try { localStorage.setItem('_t', '1'); localStorage.removeItem('_t'); return true; }
@@ -15,9 +19,10 @@
   function load() {
     if (!hasLS) { saving = false; return; }
     try { const v = localStorage.getItem(KEY); if (v) S = JSON.parse(v); } catch (e) {}
+    tidy();
   }
   function save(entry) {
-    if (entry) { S.log.push(entry); if (cloud()) cloud().add(entry); }
+    if (entry) { S.log.push(entry); if (cloud()) cloud().put('log', entry.id, entry); }
     store();
   }
   function store() {
@@ -57,7 +62,7 @@
     if (bal(me) < cost) { toast('Not enough Dutzis yet 🐾'); return; }
     give(me, label, -cost, false);
   }
-  function undo(id) { S.log = S.log.filter(e => e.id !== id); if (cloud()) cloud().remove(id); save(null); toast('Removed'); }
+  function undo(id) { S.log = S.log.filter(e => e.id !== id); if (cloud()) cloud().del('log', id); save(null); toast('Removed'); }
   function pick(k) {
     me = k;
     $('bA').classList.toggle('on', k === 'a');
@@ -118,8 +123,8 @@
 
     $('bA').addEventListener('click', e => { if (e.target.tagName !== 'INPUT') pick('a'); });
     $('bB').addEventListener('click', e => { if (e.target.tagName !== 'INPUT') pick('b'); });
-    $('nA').addEventListener('change', e => { S.names.a = e.target.value.trim() || 'Me'; save(null); if (cloud()) cloud().names(S.names); });
-    $('nB').addEventListener('change', e => { S.names.b = e.target.value.trim() || 'Her'; save(null); if (cloud()) cloud().names(S.names); });
+    $('nA').addEventListener('change', e => { S.names.a = e.target.value.trim() || 'Me'; save(null); if (cloud()) cloud().meta({ names: S.names }); });
+    $('nB').addEventListener('change', e => { S.names.b = e.target.value.trim() || 'Her'; save(null); if (cloud()) cloud().meta({ names: S.names }); });
 
     document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
@@ -148,7 +153,9 @@
     $('restoreBtn').addEventListener('click', () => {
       const b = $('box');
       if (b.hidden) { b.hidden = false; b.value = ''; toast('Paste backup, press Restore again'); return; }
-      try { const d = JSON.parse(b.value); if (!d.log) throw 0; S = d; b.hidden = true; save(null); if (cloud()) { cloud().names(S.names); cloud().replace(S.log); } toast('Restored 🐾'); }
+      try { const d = JSON.parse(b.value); if (!d.log) throw 0; S = d; tidy(); b.hidden = true; save(null);
+        if (cloud()) { cloud().meta({ names: S.names, dog: S.dog }); cloud().replace('log', S.log); cloud().replace('train', Object.values(S.train)); }
+        toast('Restored 🐾'); }
       catch (e) { toast('That backup looks broken'); }
     });
     $('linkBtn').addEventListener('click', () => {
@@ -158,9 +165,20 @@
         const b = $('box'); b.hidden = false; b.value = l; b.select(); toast('Send this link to the other phone');
       });
     });
-    $('wipeBtn').addEventListener('click', () => {
-      if (confirm('Delete all Dutzis and start over?' + (cloud() ? ' This also clears them on the other phone.' : ''))) { S = { names: S.names, log: [] }; save(null); if (cloud()) cloud().replace([]); toast('Reset'); }
+    $('switchBtn').addEventListener('click', () => {
+      if (cloud() && confirm('Enter a different shared password on this phone?')) cloud().leave();
     });
+    document.querySelectorAll('.views button').forEach(b => b.addEventListener('click', () => view(b.dataset.view)));
+    $('wipeBtn').addEventListener('click', () => {
+      if (confirm('Delete all Dutzis and start over? (Dog training stays.)' + (cloud() ? ' This also clears them on the other phone.' : ''))) { S.log = []; save(null); if (cloud()) cloud().replace('log', []); toast('Reset'); }
+    });
+  }
+
+  function view(v) {
+    document.querySelectorAll('.view').forEach(x => x.classList.toggle('on', x.id === 'v-' + v));
+    document.querySelectorAll('.views button').forEach(x => x.classList.toggle('on', x.dataset.view === v));
+    try { localStorage.setItem('dutzis_view', v); } catch (e) {}
+    render();
   }
 
   /* ---------- render ---------- */
@@ -225,13 +243,15 @@
     $('daybar').classList.toggle('back', dd.value !== isoToday());
 
     const ST = {
-      local: saving ? 'Saved on this device' : 'Not saving — private mode blocks storage',
+      local: saving ? '⚠ Only on this phone — sync not set up' : 'Not saving — private mode blocks storage',
+      locked: '🔐 Enter the shared password to sync',
       connecting: 'Connecting…', synced: 'Synced with both phones', pending: 'Saved — syncing…',
       offline: 'Offline — will sync when back online', error: 'Sync problem — saved on this device only'
     };
     $('dot').className = 'dot' + ((sync === 'local' ? saving : sync === 'synced') ? '' : ' off');
-    $('st').textContent = ST[sync];
-    $('linkBtn').hidden = sync === 'local';
+    $('st').textContent = ST[sync] + ' · ' + VERSION;
+    $('linkBtn').hidden = $('switchBtn').hidden = sync === 'local' || sync === 'locked';
+    hooks.forEach(f => f());
     if ($('p-card').classList.contains('on')) card();
   }
 
@@ -239,14 +259,19 @@
   window.Dutzis = {
     state: () => S,
     status: s => { sync = s; render(); },
-    remote: (names, log, meta) => {
-      S = { names: names, log: log };
+    toast: toast,
+    commit: store,
+    onRender: f => hooks.push(f),
+    remote: (d, meta) => {
+      S = d; tidy();
       sync = meta.hasPendingWrites ? 'pending' : (meta.fromCache ? 'offline' : 'synced');
       store();
     }
   };
 
-  load(); build(); render();
+  load(); build();
+  let v0 = 'bank'; try { v0 = localStorage.getItem('dutzis_view') || 'bank'; } catch (e) {}
+  view(v0);
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

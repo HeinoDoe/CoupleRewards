@@ -20,6 +20,12 @@
     <div class="sub">small steps, big Dutzis</div>
   </header>
 
+  <nav class="views">
+    <button class="on" data-view="bank">🐾 Bank</button>
+    <button data-view="dog">🐕 Training</button>
+  </nav>
+
+  <div class="view on" id="v-bank">
   <div class="banks">
     <div class="bank a on" id="bA">
       <input id="nA" value="Me" aria-label="First name">
@@ -76,6 +82,7 @@
       <button id="backupBtn">Copy backup</button>
       <button id="restoreBtn">Restore</button>
       <button id="linkBtn" hidden>🔗 Link other phone</button>
+      <button id="switchBtn" hidden>🔐 Change password</button>
       <button id="wipeBtn">Reset all</button>
       <textarea id="box" hidden placeholder="Paste your backup here, then press Restore again"></textarea>
     </div>
@@ -102,6 +109,58 @@
     </div>
     <p class="hint">📸 Screenshot this and send it</p>
   </section>
+  </div>
+
+  <div class="view" id="v-dog">
+    <h2 class="blue" id="dTitle">🐕 Training</h2>
+    <div class="dcard">
+      <div class="dtop"><span id="dDay">Today</span><button id="dToday" hidden>Today</button></div>
+      <div class="turn" id="dTurn"></div>
+      <button class="swap" id="dSwap">⇄ Swap turn for this day</button>
+      <div id="sessions"></div>
+    </div>
+
+    <div class="dstats">
+      <div><div class="big" id="dWeek">0 / 12</div><div class="lb">sessions this week</div>
+        <div class="pbar"><i id="dBar"></i></div></div>
+      <div><div class="big fire" id="dStreak">🔥 0</div><div class="lb">full days in a row</div></div>
+      <div><div class="big"><span id="dMinA">0</span> · <span id="dMinB">0</span></div>
+        <div class="lb"><span id="dNmA"></span> · <span id="dNmB"></span> min this week</div></div>
+    </div>
+
+    <h2>📅 Calendar</h2>
+    <div class="cal">
+      <div class="calh"><button id="dPrev" aria-label="Previous month">‹</button><b id="dMonth"></b>
+        <button id="dNext" aria-label="Next month">›</button></div>
+      <div class="grid" id="dCal"></div>
+      <div class="legend"><span><i class="la"></i><b id="lgA"></b></span><span><i class="lb2"></i><b id="lgB"></b></span>
+        <span>●● inside · outside</span><span class="lm">missed</span></div>
+    </div>
+
+    <h2 class="gold">📝 Training notes</h2>
+    <div id="dNotes"></div>
+
+    <h2 class="rust">⚙️ Plan</h2>
+    <div class="plan">
+      <label>Dog's name <input id="pDog" maxlength="20"></label>
+      <label>Rest day <select id="pRest"></select></label>
+      <label>Monday is <select id="pStart"></select></label>
+      <label>Minimum per session <span><input id="pMin" type="number" min="1" max="60"> min</span></label>
+      <p class="hint">Training days alternate between you two. Tap any day in the calendar to see or fill it in.</p>
+    </div>
+  </div>
+</div>
+
+<div class="gate" id="gate" hidden>
+  <form class="gbox" id="gateForm">
+    <div class="gi">🔐</div>
+    <h3>Your shared password</h3>
+    <p>Type the <b>same password on both phones</b> — that's what connects them.
+      Pick something only you two know (8+ characters). Capital letters don't matter.</p>
+    <input id="gatePw" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. dutzi loves cheese">
+    <button type="submit">Open our bank 🐾</button>
+    <small id="gateMsg"></small>
+  </form>
 </div>
 
 <div class="bar"><span class="dot" id="dot"></span><span id="st">…</span></div>
@@ -109,6 +168,7 @@
 
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
+<script src="js/dog.js"></script>
 <script type="module" src="js/sync.js"></script>
 </body>
 </html>
